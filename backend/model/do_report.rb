@@ -6,30 +6,34 @@ class DOReport
   attr_reader :items
 
   BASE_COLUMNS = [
-    {:header => "Resource ID",           :proc => Proc.new {|resource, item| resource_id(resource)}},
-    {:header => "Ref ID",                :proc => Proc.new {|resource, item| ref_id(item)}},
-    {:header => "URI",                   :proc => Proc.new {|resource, item| record_uri(item)}},
-    {:header => "Container Indicator 1", :proc => Proc.new {|resource, item, dates, box| indicator_1(box)}},
-    {:header => "Container Indicator 2", :proc => Proc.new {|resource, item, dates, box| indicator_2(box)}},
-    {:header => "Container Indicator 3", :proc => Proc.new {|resource, item, dates, box| indicator_3(box)}},
-    {:header => "Title",                 :proc => Proc.new {|resource, item| record_title(item)}},
-    {:header => "Component ID",          :proc => Proc.new {|resource, item| component_id(item)}},
+    {:header => "identifier",           :proc => Proc.new {|resource, item| resource_id(resource)}},
+	#DUKE CUSTOM - add ead_id
+	{:header => "eadid",           :proc => Proc.new {|resource, item| ead_id(resource)}},
+    {:header => "aspace_id",                :proc => Proc.new {|resource, item| ref_id(item)}},
+	{:header => "title",                 :proc => Proc.new {|resource, item| record_title(item)}},
+    {:header => "aspace_uri",                   :proc => Proc.new {|resource, item| record_uri(item)}},
+    {:header => "container_number_1", :proc => Proc.new {|resource, item, dates, box| indicator_1(box)}},
+    {:header => "container_number_2", :proc => Proc.new {|resource, item, dates, box| indicator_2(box)}},
+    {:header => "container_number_3", :proc => Proc.new {|resource, item, dates, box| indicator_3(box)}},
+    {:header => "component_id",          :proc => Proc.new {|resource, item| component_id(item)}},
+	#DUKE CUSTOM - add display_format column with hardcoded value of 'image'
+	{:header => "display_format",        :proc => Proc.new {|resource, item| display_format(item)}}
   ]
 
   SERIES_COLUMNS = [
-    {:header => "Series",                :proc => Proc.new { |resource, item, dates, box, series| record_title(series) }}
+    {:header => "series",                :proc => Proc.new { |resource, item, dates, box, series| record_title(series) }}
   ]
 
   SUBSERIES_COLUMNS = [
-    {:header => "Sub-Series",            :proc => Proc.new { |resource, item, dates, box, series, subseries| record_title(subseries) }}
+    {:header => "subseries",            :proc => Proc.new { |resource, item, dates, box, series, subseries| record_title(subseries) }}
   ]
 
   BARCODE_COLUMNS = [
-    {:header => "Barcode",               :proc => Proc.new {|resource, item, dates, box| barcode(box)}}
+    {:header => "barcode",               :proc => Proc.new {|resource, item, dates, box| barcode(box)}}
   ]
 
   DATES_COLUMNS = [
-    {:header => "Dates",                 :proc => Proc.new {|resource, item, dates| date_string(dates)}}
+    {:header => "date",                 :proc => Proc.new {|resource, item, dates| date_string(dates)}}
   ]
 
 
@@ -228,10 +232,20 @@ class DOReport
     return '' unless record
     record.title
   end
+  
+  #DUKE CUSTOM - hardcode 'image' in display_format column
+  def self.display_format(record)
+	return 'image'
+  end
 
 
   def self.resource_id(resource)
     JSON.parse(resource.identifier).compact.join('.')
+  end
+  
+  # DUKE CUSTOM - add ead_id
+  def self.ead_id(resource)
+	resource.ead_id
   end
 
 
@@ -276,12 +290,13 @@ class DOReport
     return '' unless dates
     dates.map { |date|
     if (date[:begin] || date[:end])
-      dates = [date[:begin], date[:end]].compact.join('--')
+      dates = [date[:begin], date[:end]].compact.join('/')
     else
       dates = date[:expression]
     end
-    "#{date[:label]}: #{dates}"
-    }.join('; ')
+    #DUKE CUSTOM - remove date label
+	"#{dates}"
+    }.join(' | ')
   end
 
 end
