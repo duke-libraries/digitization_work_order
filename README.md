@@ -1,4 +1,4 @@
-Digitization Work Order Plugin
+Digitization Work Order Plugin (CUSTOMIZED FOR DUKE)
 -----------------------------------
 
 This is an ArchivesSpace plugin that provides the ability to download reports for sets of components under a resource for the purpose of creating digitization work orders.
@@ -14,7 +14,7 @@ This plugin was developed by Hudson Molonglo for New York University and Yale Un
 
 # Getting Started
 
-Download the latest release from the Releases tab in Github:
+Download the latest release (non-Duke version) from the Releases tab in Github:
 
   https://github.com/hudmol/digitization_work_order/releases
 
