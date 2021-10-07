@@ -1,6 +1,6 @@
 require 'write_xlsx'
 
-class LadybirdExport
+class GoobiExport
 
   NEW_LINE_SEPARATOR = ' | '
 
@@ -17,92 +17,40 @@ class LadybirdExport
 
   def column_definitions
     [
-      {:header => "{F1}",                :proc => Proc.new {|row| nil }}, #BLANK!
-      {:header => "{F2}",                :proc => Proc.new {|row| nil }}, #BLANK!
-      {:header => "{F3}",                :proc => Proc.new {|row| nil }}, #BLANK!
-      {:header => "{F4}",                :proc => Proc.new {|row| nil }}, #BLANK!
-      {:header => "{F5}",                :proc => Proc.new {|row| nil }}, #BLANK!
-      {:header => "{F6}",                :proc => Proc.new {|row| nil }}, #BLANK!
-      {:header => "{F20}",               :proc => Proc.new {|row| nil }}, #BLANK!
-      {:header => "{F21}",               :proc => Proc.new {|row| nil }}, #BLANK!
-      # Cataloger(LadyBird) {fdid=51}
-      {:header => "{fdid=51}",           :proc => Proc.new {|row| nil }}, #BLANK! NEW
       # Local record ID {fdid=57}
-      {:header => "{fdid=57}",           :proc => Proc.new {|row| local_record_id(row)}}, # NEW ish -- was 56 but needed to be moved to 57
+      {:header => "aspace_uri",              :proc => Proc.new {|row| local_record_id(row)}}, # NEW ish -- was 56 but needed to be moved to 57
       # Call number {fdid=58}
-      {:header => "{fdid=58}",           :proc => Proc.new {|row| call_number(row)}},
+      {:header => "callNumber",             :proc => Proc.new {|row| call_number(row)}},
       # Box {fdid=60}
-      {:header => "{fdid=60}",           :proc => Proc.new {|row| box(row)}},
+      {:header => "container(Box)",         :proc => Proc.new {|row| box(row)}},
       # Folder {fdid=61}
-      {:header => "{fdid=61}",           :proc => Proc.new {|row| folder(row)}},
-      # Host, Creator {fdid=62}
-      {:header => "{fdid=62}",           :proc => Proc.new {|row| host_creator(row)}},
+      {:header => "subcontainer(Folder)",   :proc => Proc.new {|row| folder(row)}},
       # Host, Title {fdid=63}
-      {:header => "{fdid=63}",           :proc => Proc.new {|row| host_title(row)}},
+      {:header => "hostTitle",              :proc => Proc.new {|row| host_title(row)}},
       # Dates Inclusive/Bulk {fdid=66}
-      {:header => "{fdid=66}",           :proc => Proc.new {|row| collection_creation_years(row)}},
+      {:header => "dates",                  :proc => Proc.new {|row| collection_creation_years(row)}},
       # Host, note {fdid=68}
-      {:header => "{fdid=68}",           :proc => Proc.new {|row| host_note(row)}},
-      # Creator {fdid=69}
-      {:header => "{fdid=69}",           :proc => Proc.new {|row| creator(row)}},
+      {:header => "sourceNote",           :proc => Proc.new {|row| host_note(row)}},
       # Title {fdid=70}
-      {:header => "{fdid=70}",           :proc => Proc.new {|row| title(row)}},
-      # Parts Scanned(LadyBird) {fdid=75}
-      {:header => "{fdid=75}",           :proc => Proc.new {|row| nil }}, #BLANK! NEW
-      # Date, created {fdid=79}
-      {:header => "{fdid=79}",           :proc => Proc.new {|row| creation_date(row)}},
+      {:header => "title",                  :proc => Proc.new {|row| title(row)}},
       # Physical description {fdid=82}
-      {:header => "{fdid=82}",           :proc => Proc.new {|row| physical_description(row)}},
-      # Language {fdid=84}
-      {:header => "{fdid=84}",           :proc => Proc.new {|row| language(row)}},
+      {:header => "physDesc",               :proc => Proc.new {|row| physical_description(row)}},
       # Note {fdid=86}
-      {:header => "{fdid=86}",           :proc => Proc.new {|row| note(row)}},
+      {:header => "note",              :proc => Proc.new {|row| note(row)}},
       # Abstract {fdid=87}
-      {:header => "{fdid=87}",           :proc => Proc.new {|row| abstract(row)}},
-      # Subject, name {fdid=88}
-      {:header => "{fdid=88}",           :proc => Proc.new {|row| name_subjects(row)}},
-      # Subject, topic {fdid=90}
-      {:header => "{fdid=90}",           :proc => Proc.new {|row| topic_subjects(row)}},
-      # Subject, geographic {fdid=91}
-      {:header => "{fdid=91}",           :proc => Proc.new {|row| geo_subjects(row)}},
-      # Genre {fdid=98}
-      {:header => "{fdid=98}",           :proc => Proc.new {|row| nil }}, #BLANK!
-      # Type of resource {fdid=99}
-      {:header => "{fdid=99}",           :proc => Proc.new {|row| nil }}, #BLANK!
-      # Location, YUL {fdid=100}
-      {:header => "{fdid=100}",           :proc => Proc.new {|row| 'Beinecke Library {id=294468}'}},
-      # Access condition {fdid=102}
-      {:header => "{fdid=102}",           :proc => Proc.new {|row| nil}}, #BLANK!
-      # Restriction {fdid=103}
-      {:header => "{fdid=103}",           :proc => Proc.new {|row| nil }}, #BLANK!
-      # BibID(LadyBird) {fdid=104}
-      {:header => "{fdid=104}",           :proc => Proc.new {|row| nil }}, #BLANK! NEW
+      {:header => "abstract",               :proc => Proc.new {|row| abstract(row)}},
       # Barcode {fdid=105}
-      {:header => "{fdid=105}",           :proc => Proc.new {|row| barcode(row)}},
-      # YFAD {fdid=106}
-      {:header => "{fdid=106}",           :proc => Proc.new {|row| ead_location(row)}},
-      # Citation {fdid=156}
-      {:header => "{fdid=156}",           :proc => Proc.new {|row| citation_note(row)}},
-      # Digital Format(LadyBird) {fdid=157}
-      {:header => "{fdid=157}",           :proc => Proc.new {|row| 'image/tiff' }}, # NEW
-      # Item Permission  {fdid=180}
-      {:header => "{fdid=180}",           :proc => Proc.new {|row| nil }}, #BLANK!
-      # Studio Notes {fdid=187}
-      {:header => "{fdid=187}",           :proc => Proc.new {|row| nil }}, #BLANK!
-      # Digital Collection {fdid=275}
-      {:header => "{fdid=275}",           :proc => Proc.new {|row| nil}}, #BLANK!
-      # ISO Date {fdid=280)
-      {:header => "{fdid=280}",           :proc => Proc.new {|row| all_years(row)}},
-      # Content type {fdid=288}
-      {:header => "{fdid=288}",           :proc => Proc.new {|row| nil}}, #BLANK!
-      # Start Date {fdid=308}
-      # just the start date from 288 if 288 exists. If n.d, remain blank like 288
-      # HM: assuming this should say "280" because 288 is BLANK
-      {:header => "{fdid=308}",           :proc => Proc.new {|row| start_year(row)}}, 
-      # End Date {fdid=309} 
-      # the end date from 288 if 288 exists. If n.d., remain blank like 288 does
-      # HM: assuming this should say "280" because 288 is BLANK
-      {:header => "{fdid=309}",           :proc => Proc.new {|row| end_year(row)}},
+      {:header => "aspace_barcode",                :proc => Proc.new {|row| barcode(row)}},
+      # Publication Type
+      {:header => "pubType",                :proc => Proc.new {|row| "ArchivalObject" }},
+      # Collection
+      {:header => "collection",             :proc => Proc.new {|row| "DefaultCollection" }},
+      # use opac
+      {:header => "useOPAC",                :proc => Proc.new {|row| "TRUE" }},
+      # use aspace opac
+      {:header => "opacName",               :proc => Proc.new {|row| "aspace" }},
+      #Process title
+      {:header => "processTitle",           :proc => Proc.new {|row| nil }}, #BLANK!
     ]
   end
 
@@ -143,10 +91,6 @@ class LadybirdExport
     @has_digital_object_instances.include?(id)
   end
 
-  def creators_for_archival_object(id)
-    @creators.fetch(id, [])
-  end
-
   def creation_dates_for_resource(id)
     @resource_creation_dates.fetch(id, [])
   end
@@ -161,10 +105,6 @@ class LadybirdExport
 
   def extents_for_archival_object(id)
     @extents.fetch(id, [])
-  end
-
-  def creators_for_resource(id)
-    @resource_creators.fetch(id, [])
   end
 
   def notes_for_archival_object(id)
@@ -207,19 +147,6 @@ class LadybirdExport
     end
   end
 
-  def name_subjects_for_archival_object(id)
-    @agent_subjects.fetch(id, [])
-  end
-
-  def topic_subjects_for_archival_object(id)
-    @subjects.fetch(id, []).select{|s| s[:first_term_type] == 'topical'}
-  end
-
-  def geo_subjects_for_archival_object(id)
-    @subjects.fetch(id, []).select{|s| s[:first_term_type] == 'geographic'}
-  end
-
-
   private
 
   def dataset
@@ -255,13 +182,10 @@ class LadybirdExport
 
     prepare_resource_creation_dates
     prepare_ao_creation_dates
-    prepare_related_agents
     prepare_extents
     prepare_notes
     prepare_breadcrumbs
-    prepare_subjects
     prepare_digital_object_instance_flags
-    prepare_languages
 
     ds
   end
@@ -350,90 +274,6 @@ class LadybirdExport
 
       @extents[row[:archival_object_id]] ||= []
       @extents[row[:archival_object_id]] << row
-    end
-  end
-
-  def prepare_related_agents
-    @creators = {}
-    @resource_creators = {}
-    @agent_subjects = {}
-
-    subject_enum_id = nil
-    creator_enum_id = nil
-
-    EnumerationValue
-      .filter(:enumeration_id => Enumeration.filter(:name => 'linked_agent_role').select(:id))
-      .filter(:value => ['creator', 'subject'])
-      .select(:id, :value)
-      .each do |row|
-      if row[:value] == 'creator'
-        creator_enum_id = row[:id]
-      elsif row[:value] == 'subject'
-        subject_enum_id = row[:id]
-      end
-    end
-
-    ArchivalObject
-      .left_outer_join(:linked_agents_rlshp, :linked_agents_rlshp__archival_object_id => :archival_object__id)
-      .left_outer_join(:agent_person, :agent_person__id => :linked_agents_rlshp__agent_person_id)
-      .left_outer_join(:agent_corporate_entity, :agent_corporate_entity__id => :linked_agents_rlshp__agent_corporate_entity_id)
-      .left_outer_join(:agent_family, :agent_family__id => :linked_agents_rlshp__agent_family_id)
-      .left_outer_join(:agent_software, :agent_software__id => :linked_agents_rlshp__agent_software_id)
-      .left_outer_join(:name_person, :name_person__id => :agent_person__id)
-      .left_outer_join(:name_corporate_entity, :name_corporate_entity__id => :agent_corporate_entity__id)
-      .left_outer_join(:name_family, :name_family__id => :agent_family__id)
-      .left_outer_join(:name_software, :name_software__id => :agent_software__id)
-      .filter(:archival_object__id => @ids)
-      .filter(Sequel.|({:name_person__is_display_name => 1}, {:name_person__is_display_name => nil}))
-      .filter(Sequel.|({:name_corporate_entity__is_display_name => 1}, {:name_corporate_entity__is_display_name => nil}))
-      .filter(Sequel.|({:name_family__is_display_name => 1}, {:name_family__is_display_name => nil}))
-      .filter(Sequel.|({:name_software__is_display_name => 1}, {:name_software__is_display_name => nil}))
-      .filter(Sequel.|({:linked_agents_rlshp__role_id => [creator_enum_id, subject_enum_id]}))
-      .select(Sequel.as(:archival_object__id, :archival_object_id),
-              Sequel.as(:linked_agents_rlshp__role_id, :role_id),
-              Sequel.as(:name_person__sort_name, :person),
-              Sequel.as(:name_corporate_entity__sort_name, :corporate_entity),
-              Sequel.as(:name_family__sort_name, :family),
-              Sequel.as(:name_software__sort_name, :software))
-      .distinct
-      .each do |row|
-
-      if row[:role_id] == creator_enum_id
-        @creators[row[:archival_object_id]] ||= []
-        @creators[row[:archival_object_id]] << row
-      elsif row[:role_id] == subject_enum_id
-        @agent_subjects[row[:archival_object_id]] ||= []
-        @agent_subjects[row[:archival_object_id]] << row
-      end
-    end
-
-    Resource
-      .left_outer_join(:linked_agents_rlshp, :linked_agents_rlshp__resource_id => :resource__id)
-      .left_outer_join(:agent_person, :agent_person__id => :linked_agents_rlshp__agent_person_id)
-      .left_outer_join(:agent_corporate_entity, :agent_corporate_entity__id => :linked_agents_rlshp__agent_corporate_entity_id)
-      .left_outer_join(:agent_family, :agent_family__id => :linked_agents_rlshp__agent_family_id)
-      .left_outer_join(:agent_software, :agent_software__id => :linked_agents_rlshp__agent_software_id)
-      .left_outer_join(:name_person, :name_person__id => :agent_person__id)
-      .left_outer_join(:name_corporate_entity, :name_corporate_entity__id => :agent_corporate_entity__id)
-      .left_outer_join(:name_family, :name_family__id => :agent_family__id)
-      .left_outer_join(:name_software, :name_software__id => :agent_software__id)
-      .left_outer_join(:archival_object, :archival_object__root_record_id => :resource__id)
-      .filter(:archival_object__id => @ids)
-      .filter(Sequel.|({:name_person__is_display_name => 1}, {:name_person__is_display_name => nil}))
-      .filter(Sequel.|({:name_corporate_entity__is_display_name => 1}, {:name_corporate_entity__is_display_name => nil}))
-      .filter(Sequel.|({:name_family__is_display_name => 1}, {:name_family__is_display_name => nil}))
-      .filter(Sequel.|({:name_software__is_display_name => 1}, {:name_software__is_display_name => nil}))
-      .filter(:linked_agents_rlshp__role_id => creator_enum_id)
-      .select(Sequel.as(:resource__id, :resource_id),
-              Sequel.as(:name_person__sort_name, :person),
-              Sequel.as(:name_corporate_entity__sort_name, :corporate_entity),
-              Sequel.as(:name_family__sort_name, :family),
-              Sequel.as(:name_software__sort_name, :software))
-      .distinct
-      .each do |row|
-
-      @resource_creators[row[:archival_object_id]] ||= []
-      @resource_creators[row[:archival_object_id]] << row
     end
   end
 
@@ -538,39 +378,6 @@ class LadybirdExport
     end
   end
 
-
-  def prepare_subjects
-    @subjects = {}
-
-    current = nil
-
-    Subject
-      .left_outer_join(:subject_rlshp, :subject_rlshp__subject_id => :subject__id)
-      .left_outer_join(:subject_term, :subject_term__subject_id => :subject__id)
-      .left_outer_join(:term, :term__id => :subject_term__term_id)
-      .left_outer_join(:enumeration_value, { :term_type_enum__id => :term__term_type_id }, :table_alias => :term_type_enum)
-      .filter(:subject_rlshp__archival_object_id => @ids)
-      .select(Sequel.as(:subject_rlshp__archival_object_id, :archival_object_id),
-              Sequel.as(:subject__id, :subject_id),
-              Sequel.as(:term_type_enum__value, :term_type),
-              Sequel.as(:subject__title, :display_string))
-      .order(:subject__id, :subject_term__id)
-      .each do |row|
-      @subjects[row[:archival_object_id]] ||= []
-      if current.nil? || current[:subject_id] != row[:subject_id]
-        current = {
-          :subject_id => row[:subject_id],
-          :display_string => row[:display_string],
-          :first_term_type => row[:term_type]
-        }
-
-        @subjects[row[:archival_object_id]] << current
-      else
-        # we only care about the first term type
-      end
-    end
-  end
-
   def prepare_digital_object_instance_flags
     @has_digital_object_instances = []
 
@@ -582,20 +389,6 @@ class LadybirdExport
       .distinct
       .each do |row|
       @has_digital_object_instances << row[:archival_object_id]
-    end
-  end
-
-  def prepare_languages
-    @languages = {}
-
-    LangMaterial
-      .filter(:lang_material__archival_object_id => @ids)
-      .join(:language_and_script, :language_and_script__lang_material_id => :lang_material__id)
-      .join(:enumeration_value, { :language_enum__id => :language_and_script__language_id }, :table_alias => :language_enum)
-      .select(:lang_material__archival_object_id, Sequel.as(:language_enum__value, :archival_object_language))
-      .each do |row|
-      @languages[row[:archival_object_id]] ||= []
-      @languages[row[:archival_object_id]] << row[:archival_object_language]
     end
   end
 
@@ -617,12 +410,6 @@ class LadybirdExport
 
   def folder(row)
     row[:sub_container_indicator] if row[:sub_container_type] == 'folder'
-  end
-
-  def host_creator(row)
-    creators_for_resource(row[:archival_object_id])
-      .map{|row| (row[:person] || row[:corporate_entity] || row[:family] || row[:software])}
-      .join(NEW_LINE_SEPARATOR)
   end
 
   def host_title(row)
@@ -690,10 +477,6 @@ class LadybirdExport
       .join(NEW_LINE_SEPARATOR)
   end
 
-  def language(row)
-    @languages.fetch(row[:archival_object_id], []).uniq.join('|')
-  end
-
   def creation_date(row)
     creation_dates_for_archival_object(row[:archival_object_id])
       .map{|row| row[:expression] || [row[:begin], row[:end]].compact.join(' - ')}
@@ -708,23 +491,6 @@ class LadybirdExport
     }.join(NEW_LINE_SEPARATOR)
   end
 
-  def name_subjects(row)
-    name_subjects_for_archival_object(row[:archival_object_id])
-      .map{|row| (row[:person] || row[:corporate_entity] || row[:family] || row[:software])}
-      .join(NEW_LINE_SEPARATOR)
-  end
-
-  def topic_subjects(row)
-    topic_subjects_for_archival_object(row[:archival_object_id])
-      .map{|row| row[:display_string]}
-      .join(NEW_LINE_SEPARATOR)
-  end
-
-  def geo_subjects(row)
-    geo_subjects_for_archival_object(row[:archival_object_id])
-      .map{|row| row[:display_string]}
-      .join(NEW_LINE_SEPARATOR)
-  end
 
   def ead_location(row)
     row[:resource_ead_location]
